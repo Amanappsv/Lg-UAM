@@ -1,0 +1,10 @@
+{
+    "vendor": "My Company",
+    "largeIcon": "largeIcon.png",
+    "icon": "icon.png",
+    "main": "splash.html",
+    "id": "com.domain.app",
+    "title": "UAM TV",
+    "type": "web",
+    "version": "0.0.1"
+}

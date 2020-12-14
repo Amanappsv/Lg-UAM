@@ -18,29 +18,34 @@ window.onload = init;
 
 function initTizenKeys()
 {
-	document.addEventListener("keydown", function(inEvent){
-		console.log(inEvent.keyCode);
-		
-		if(inEvent.keyCode == 40){
-			moveDown();
-		}
-		else if(inEvent.keyCode == 37){
-			moveLeft();
-		}
-		else if(inEvent.keyCode == 38){
-			moveUp();
-		}
-		else if(inEvent.keyCode == 39){
-			moveRight();
-		}
-		else if(inEvent.keyCode == 13){
-			moveOk();
-		}
-		else if(inEvent.keyCode == 91){
-			 location.href = "../home/home.html";
-		}
-		
-	});
+	 // add eventListener for keydown
+    document.addEventListener('keydown', function(e) {
+    	switch(e.keyCode){
+    	case 37: //LEFT arrow
+    	//	moveLeft();
+    		break;
+    	case 38: //UP arrow
+    		moveUp();
+    		break;
+    	case 39: //RIGHT arrow
+    	//	moveRight();
+    		break;
+    	case 40: //DOWN arrow
+    		moveDown();
+    		break;
+    	case 13: //OK button
+    		//moveOk();
+    
+    		
+       		break;
+    	case 10009: //RETURN button
+    		location.href = "../home/home.html";
+    		break;
+    	default:
+    		console.log('Key code : ' + e.keyCode);
+    		break;
+    	}
+    });
 }
 
 

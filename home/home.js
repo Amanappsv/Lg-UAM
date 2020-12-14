@@ -94,6 +94,7 @@ function initWebOsKeys(){
 			moveOk();
 		}
 		else if(inEvent.keyCode == 91){
+			 location.href = "../home/home.html";
 		}
 		
 	});
@@ -304,7 +305,7 @@ function moveOk() {
     else if(document.getElementsByClassName("activeSeeMoreRecent")[0] !== undefined)
 	{
     	
-	     localStorage.setItem("movie_screen_title", "La maggior parte dei recenti");
+	     localStorage.setItem("movie_screen_title", "Ultime uscite");
 	     localStorage.setItem("movies", JSON.stringify(mostRecentsList));
 		 viewMovieListScreen();
 	}
@@ -336,6 +337,7 @@ function moveOk() {
     	if(el === "logout_btn_id"){
     	
     		localStorage.removeItem("jwt token");
+    		localStorage.removeItem("remembered");
     		
     		location.href = "../login.html";
     		

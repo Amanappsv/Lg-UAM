@@ -19,7 +19,7 @@ function initPage() {
     	
     	 if(token === null)
 		 {
-		
+		  console.log("token null");
 		 location.href = "login.html";
 		 }
 		 
@@ -60,26 +60,8 @@ let formData = new FormData();
 	    	formData.append('devicehash', inResponse["idList"][0]["idValue"]);
 	    	
 	        webOS.deviceInfo( function (device) {
+	        	temp(formData , device , token);
 	        	
-	        	async function temp(){
-	        		 formData.append('devicefriendlyname',  device.modelName);
-	     	    	formData.append('platform', "LG " + device.version);
-	     	    	formData.append('version', device.version);
-	     	    
-	     	    	
-	     	    	
-	     	    		
-	     		 	   	    var response = await fetch(URL + 'v3/users/devices/heartbeat/post.php', {
-	     		 	   		   	  method: 'POST',
-	     		 	   			  body:formData,
-	     		 	   			  headers: {
-	     		 	   				  'Authorization' : "Bearer " + token,
-	     		 	   			  },
-	     		 	   			});
-	     		 	   	    var data = await response.json();
-	     		 	   	    console.log(data);
-	     		 	   		
-	        	}
 	          });
 	    	
 	        
@@ -87,11 +69,43 @@ let formData = new FormData();
 	    onFailure: function (inError) {
 	        console.log("Failed to get system ID information");
 	        console.log("[" + inError.errorCode + "]: " + inError.errorText);
+	        
+	 		location.href = "login.html";
+	        
 	        // To-Do something
 	        return;
 	    }
 	});
 	
+}
+
+
+
+async function temp(formData , device , token){
+	
+	formData.append('devicefriendlyname',  device.modelName);
+	formData.append('platform', "LG " + device.version);
+	formData.append('version', device.version);
+
+	
+	
+		
+ 	   	    var response = await fetch(URL + 'v3/users/devices/heartbeat/post.php', {
+ 	   		   	  method: 'POST',
+ 	   			  body:formData,
+ 	   			  headers: {
+ 	   				  'Authorization' : "Bearer " + token,
+ 	   			  },
+ 	   			});
+ 	   	    var data = await response.json();
+ 	   	    console.log(data);
+ 	   	    
+	 		location.href = "home/home.html";
+
+ 	   	    
+ 	   	    
+ 	   	    
+ 	   		
 }
 
 

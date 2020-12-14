@@ -63,6 +63,17 @@ function keyOk()
 			loginStyleChange();
 			login();
 		}
+	else if(document.activeElement.id === "remember")
+	{
+		if(document.getElementById("remember").checked == true)
+			{
+			document.getElementById("remember").checked = false;
+			}
+		else
+			{
+			document.getElementById("remember").checked = true;
+			}
+	}
 	else if(document.activeElement.id === "subscribe")
 		{
 		  	location.href = "signup/signup.html";

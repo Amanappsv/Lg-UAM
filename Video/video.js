@@ -126,6 +126,7 @@ function setPlayer() {
 
 
 
+
 function initTizenKeys()
 {
 	document.addEventListener("keydown", function(inEvent){
@@ -149,12 +150,10 @@ function initTizenKeys()
 		else if(inEvent.keyCode == 91){
 			 location.href = "../home/home.html";
 		}
-		else{
-			console.log(inEvent.keyCode);
-		}
 		
 	});
 }
+
 
 
 function moveRight(){

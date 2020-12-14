@@ -5,11 +5,8 @@ var selectedCatPos = 0;
 var categoryList = [];
 
 var init = function () {
-	  
-	
-	
-	initWebOsKeys();
-	  
+       
+    initTizenKeys();
     hideSection("not_found_id");
     document.getElementById("search_field_id").focus();
     setFocus("search_field_id" , "activeField");
@@ -52,7 +49,8 @@ window.onload = init;
 
 
 
-function initWebOsKeys(){
+function initTizenKeys()
+{
 	document.addEventListener("keydown", function(inEvent){
 		console.log(inEvent.keyCode);
 		
@@ -74,12 +72,8 @@ function initWebOsKeys(){
 		else if(inEvent.keyCode == 91){
 			 location.href = "../home/home.html";
 		}
-		else{
-			console.log(inEvent.keyCode);
-		}
 		
 	});
-
 }
 
 
@@ -153,7 +147,6 @@ function moveUp(){
 				
 			document.getElementById("search_field_id").focus();
 		    setFocus("search_field_id" , "activeField");
-		    document.getElementById("search_field_id").focus();
 			
 		}
 	}
@@ -167,7 +160,6 @@ function moveLeft(){
 		removeFocus("searchStyleAfterClick");
 		document.getElementById("search_field_id").focus();
 	    setFocus("search_field_id" , "activeField");
-	    document.getElementById("search_field_id").focus();
 		
 		
 	}

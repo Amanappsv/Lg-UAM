@@ -29,9 +29,11 @@ window.onload = init;
 
 
 
+
+
+
 function initTizenKeys()
 {
-	
 	document.addEventListener("keydown", function(inEvent){
 		console.log(inEvent.keyCode);
 		
@@ -55,8 +57,8 @@ function initTizenKeys()
 		}
 		
 	});
-	
 }
+
 
 
 function moveOk() {

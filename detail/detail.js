@@ -73,7 +73,6 @@ function initTizenKeys()
 	});
 }
 
-
 function moveOk(){
 
 		if (document.getElementsByClassName("activeFav")[0] !== undefined) {
@@ -541,7 +540,7 @@ function showLoader(){
 
               
               localStorage.setItem("video", videoUrl);
-              localStorage.setItem("videoId",  moviePlay["contentId"]);
+              localStorage.setItem("videoId",  details["uid"]);
               
               
               location.href="../Video/video.html"

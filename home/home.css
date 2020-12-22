@@ -775,3 +775,20 @@ h2 {
      height: 289px;
      border-radius: 12px;
 	}
+.unsubscribeText{
+	font-size: 1.8rem;
+    color: white;
+    font-weight: bold;
+    letter-spacing: 1px;
+    position: relative;
+    top: 1rem;
+}	
+	
+	
+.active_logout{
+	opacity : 0.5 !important;
+}
+
+.unactive_logout{
+	opacity : 1 !important;
+}

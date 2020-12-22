@@ -24,7 +24,7 @@
 
 
 <!-- data-setup='{ "inactivityTimeout": 0 }' -->
-<video id="player_one" class="video-js vjs-fluid vjs-default-skin" controls preload playsinline poster="" >
+<video id="player_one" class="video-js vjs-fluid vjs-default-skin" controls preload playsinline poster="" data-setup='{ "inactivityTimeout": 0 }'>
 </video>
 <div class="text_documentry " style="visibility: hidden;">Documentry</div>
 <div class="text_view ml-5" style="visibility: hidden;">216K Views</div>
@@ -43,6 +43,29 @@
     </div>
 
 
+
+<!-- Modal -->
+<div class="bs-example">
+
+    <!-- Modal HTML -->
+    <div id="myModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Alert</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button> 
+                </div>
+                <div class="modal-body">
+                    <p>Attualmente questo titolo non è disponibile nel tuo paese. Nella home page c'è molto altro da scoprire</p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="ok_btn_id" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>  
 
 </body>
 

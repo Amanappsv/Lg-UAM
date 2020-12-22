@@ -6,6 +6,8 @@ var favList = [];
 var mostRecentsList = [];
 var mostViewedList = [];
 var randomBannerList = [];
+var activeSubscription;
+
 
 var selectedBannerIndex = 0;
 
@@ -21,6 +23,7 @@ function initPage() {
    
 	viewLoader();
 
+	
     // set Focus on details text....
 
     setFocus("watch_btn_id", "watch_btn");
@@ -35,7 +38,7 @@ function initPage() {
     //get token...
     var token = localStorage.getItem("jwt token");
 
-    if (token !== null) {
+ if (token !== null) {
     	
     	
     	
@@ -47,19 +50,39 @@ function initPage() {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
 
+        activeSubscription = JSON.parse(jsonPayload).state;
+        
+       
+         
         var exp = JSON.parse(jsonPayload).exp;
         var refreshToken = JSON.parse(jsonPayload).refreshtoken;
 
        if (Date.now() >= exp * 1000) {
      	  
-    	   refreshMyToken(refreshToken);
+    	   refreshMyToken(token , refreshToken);
     	   
        }
        else
        {
+    	   
+    	   if(activeSubscription == "Active")
+    		   {
+    			  localStorage.setItem("subscribed", "true");
+  		   		document.getElementById('unsubscribeUser').style.display = "none"
+
+    		   }
+    		   else {
+     			  localStorage.setItem("subscribed", "false");
+   			   document.getElementById('button_layout_id').style.display = "none"
+
+
+    		   }
+    	   
      	  getHomeScreenData();
        }
     
+       
+       
      
     	
     } else {
@@ -148,7 +171,7 @@ function refreshMyToken(refreshToken){
 		        "devicehash": webapis.productinfo.getDuid(),
 		        "devicefriendlyname": device.modelName,
 		        "platform" : "LG " + device.version,
-		        "version" : device.version
+		        "version" : "0.0.1"
 		    };
 	  		
 
@@ -161,9 +184,30 @@ function refreshMyToken(refreshToken){
 			        });
 		 	   	    var data = await response.json();
 		 	 
-		 	   	    localStorage.setItem("jwt token", data["jwt"]);
+		 	   	localStorage.setItem("jwt token", data["jwt"]);
 	        	
-		 	   	    getHomeScreenData();
+	        	var base64Url = data["jwt"].split('.')[1];
+	            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+	            var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+	                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+	            }).join(''));
+
+	        	activeSubscription = JSON.parse(jsonPayload).state;
+	            
+	        	   if(activeSubscription == "Active"){
+	     			    localStorage.setItem("subscribed", "true");
+	    		   		document.getElementById('unsubscribeUser').style.display = "none"
+
+	        	   }
+	    		   else {
+	     			   localStorage.setItem("subscribed", "false");
+	    			   document.getElementById('button_layout_id').style.display = "none"
+
+
+	    		   }
+	    	   
+	        	
+	        	getHomeScreenData();
 		 	  
 	 
 }
@@ -328,18 +372,38 @@ function moveOk() {
     	}
 
     }
-    
+    else if(document.getElementsByClassName("active_logout")[0] !== undefined){
+
+    	
+		if(document.getElementsByClassName("active_logout")[0].id == "cancel_id_btn"){
+			
+			removeFocus("active_logout");
+			$('#myModal').modal('hide');
+		}
+		else if(document.getElementsByClassName("active_logout")[0].id == "ok_id_btn"){
+			
+			removeFocus("active_logout");
+			localStorage.removeItem("jwt token");
+    		localStorage.removeItem("remembered");
+    		location.href = "../login.html";
+		}
+    }
  else if (document.getElementsByClassName("watch_btn")[0] !== undefined){
     	
-    	
+	
     	var el = document.getElementsByClassName("watch_btn")[0].id;
     	
     	if(el === "logout_btn_id"){
-    	
-    		localStorage.removeItem("jwt token");
-    		localStorage.removeItem("remembered");
+
     		
-    		location.href = "../login.html";
+    		
+    		setFocus("cancel_id_btn" , "active_logout")
+    		$('#myModal').modal('show');
+
+    		
+    		
+    		
+
     		
     	}
    
@@ -417,9 +481,15 @@ function moveUp() {
         }
         
         else if(document.getElementsByClassName("button_left")[0] !== undefined){
-        	setFocus("add_play_btn", "button_play");
-            document.getElementById("add_play_btn").style.opacity = 0.5;
+        	  if(activeSubscription == "Active"){
+        		  setFocus("add_play_btn", "button_play");
+                  document.getElementById("add_play_btn").style.opacity = 0.5;
 
+        	  }
+        	  else{
+        		  setFocus("detail", "activeDetail");
+        	  }
+        	
             
             removeFocus("button_left");
         }
@@ -532,9 +602,18 @@ function moveDown() {
     } else {
 
         if (document.getElementsByClassName("activeDetail")[0] !== undefined) {
-            setFocus("add_play_btn", "button_play");
-            document.getElementById("add_play_btn").style.opacity = 0.5;
+          
+        	  if(activeSubscription == "Active"){
+        			setFocus("add_play_btn", "button_play");
+                    document.getElementById("add_play_btn").style.opacity = 0.5;
 
+        	  }
+  		   		
+  		   else {
+  			       setFocus("left_back_id" , "button_left");   
+  		   }
+  			   
+        
             removeFocus("activeDetail");
 
         }
@@ -799,6 +878,15 @@ function moveLeft() {
         var onLeftElementId = document.getElementsByClassName("watch_btn")[0].id;
         setFocus(onLeftElementId, "onLeft");
     }
+    
+    else if(document.getElementsByClassName("active_logout")[0] !== undefined){
+     	if(document.getElementsByClassName("active_logout")[0].id == "ok_id_btn"){
+     		removeFocus("active_logout");
+     		setFocus("cancel_id_btn" , "active_logout");
+     	}
+     }
+    
+
 }
 
 
@@ -844,6 +932,14 @@ function moveRight() {
         			setFocus("fav-wrap " + selectedScreenFavPos, "catCardHover");
         		}
         }
+        	 else if(document.getElementsByClassName("active_logout")[0] !== undefined){
+             	if(document.getElementsByClassName("active_logout")[0].id == "cancel_id_btn"){
+             		removeFocus("active_logout");
+             		setFocus("ok_id_btn" , "active_logout");
+             	}
+             }
+        
+        
 
     }
 
@@ -1000,6 +1096,7 @@ function moveRight() {
                 document.documentElement.scrollTop = 0;
             }
         }
+       
         
         
 
@@ -1008,7 +1105,6 @@ function moveRight() {
 
 
 }
-
 
 function getHomeScreenData() {
 
@@ -1028,199 +1124,230 @@ function getHomeScreenData() {
 }
 
 
-async function getProfileData(token) {
+function getProfileData(token) {
 	
 	
-	  var response = await fetch(URL + 'v3/users/get.php', {
-			  headers: {
-				  'Authorization' : "Bearer " + token
-			  },
-			});
-  	    var data = await response.json();
-  	 	
-  	    var username = data["data"][0]["fname"];	
-		document.getElementById('user_name_id').innerHTML = username;
+	
+		fetch(URL + 'v3/users/get.php', {
+				  headers: {
+					  'Authorization' : "Bearer " + token
+				  },
+				})
+				.then(response => response.json())
+				.then(data => {
 			
-		     localStorage.setItem("username", username);
+				
+					var username = data["data"][0]["fname"];	
+					document.getElementById('user_name_id').innerHTML = username;
+						
+					     localStorage.setItem("username", username);
+						
+
+						getRandomMovies(token);
+
+
+				})
+				.catch((error) => {
+				  console.error('Err:', error);
+				});
 			
-
-			getRandomMovies(token);
-
- 
-  	    
-  	 
+		
 
 	
 }
 
 
 
-async function getRandomMovies(token) {
-    
-	
-	
-	 var response = await fetch(URL + 'v3/movies/onair/getRandomSelection.php', {
-		  headers: {
-			  'Authorization' : "Bearer " + token
-		  },
-		});
-	    var data = await response.json();
-	 	
-	  
-        data.forEach(function(result, index) {
-        	 // add categories to list.....
-            var obj = {
-                "fullId": result["src"]["id_full"],
-                "year": result["meta"]["year"],
-                "length": result["meta"]["lenght"],
-                "cast": result["meta"]["cast"],
-                "director": result["meta"]["directors"],
-                "title": result["langs"]["it"]["title"],
-                "image": "https://media.uam.tv/images/media/frames/" + result["src"]["id_full"] + ".jpg",
-                "desc": result["langs"]["it"]["logline"],
-                "tag": result["langs"]["it"]["tags"],
-                "geolimits": result["meta"]["geolimits"],
-                "trailerId": result["src"]["id_trailer"],
-                "uid": result["uid"]
-           
-            };
+function getRandomMovies(token) {
+    fetch(URL + 'v3/movies/onair/getRandomSelection.php', {
+            headers: {
+                'Authorization': "Bearer " + token
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
 
-            randomBannerList.push(obj);
-        });
-
-        addBackground();
-        getCategories(token);
+            data.forEach((result, index) => {
 
 
-}
-
-
-async function getFavourites(token){
-	
-	
-	
-	 var response = await fetch(URL + 'v3/users/favourites/get.php', {
-         headers: {
-             'Authorization': "Bearer " + token
-         },
-     });
-	    var data = await response.json();
-	 	
-	    if(data["data"] != null)
-		{
-	    	data["data"].forEach(function(result, index) {
-	    		  // add favorites to list.....
+                // add categories to list.....
                 var obj = {
-                    "fullId" : result["id_full"],
-                     "title" : result["title"],
-                    "image": "https://media.uam.tv/images/media/slider/" + result["id_full"] + ".jpg",
-                    "movie_id" : result["id_movie"]
+                    "fullId": result["src"]["id_full"],
+                    "year": result["meta"]["year"],
+                    "length": result["meta"]["lenght"],
+                    "cast": result["meta"]["cast"],
+                    "director": result["meta"]["directors"],
+                    "title": result["langs"]["it"]["title"],
+                    "image": "https://media.uam.tv/images/media/frames/" + result["src"]["id_full"] + ".jpg",
+                    "desc": result["langs"]["it"]["logline"],
+                    "tag": result["langs"]["it"]["tags"],
+                    "geolimits": result["meta"]["geolimits"],
+                    "trailerId": result["src"]["id_trailer"],
+                    "uid": result["uid"],
+                    "movie_id" : result["uid"]
+               
                 };
 
-                favList.push(obj);
-	         });
+                randomBannerList.push(obj);
+            })
 
-		}
+            addBackground();
+            getCategories(token);
 
-     getMostRecents(token);
-	
-	
-	
-	
-	
 
+        })
+        .catch((error) => {
+            console.error('Err:', error);
+            // hideLoader();
+        });
+}
+
+
+function getFavourites(token){
+	
+				    fetch(URL + 'v3/users/favourites/get.php', {
+			            headers: {
+			                'Authorization': "Bearer " + token
+			            },
+			        })
+			        .then(response => response.json())
+			        .then(data => {
+
+			        	if(data["data"] != null)
+			        		{
+			        		 data["data"].forEach((result, index) => {
+
+
+					                
+			                     // add favorites to list.....
+			                     var obj = {
+			                         "fullId" : result["id_full"],
+			                          "title" : result["title"],
+			                         "image": "https://media.uam.tv/images/media/slider/" + result["id_full"] + ".jpg",
+			                         "movie_id" : result["id_movie"]
+			                     };
+
+			                     favList.push(obj);
+			           
+
+			             })
+
+			        		}
+
+			             getMostRecents(token);
+
+			        	
+							
+			        })
+			        .catch((error) => {
+			            console.error('Err:', error);
+			            // hideLoader();
+			        });
+	
 	
 }
 
-async function getCategories(token) {
-   
-	
-	
-	
-	 var response = await fetch(URL + 'v3/movies/categories/get.php', {
-         headers: {
-             'Authorization': "Bearer " + token
-         },
-     });
-	    var data = await response.json();
-	 	
-	   
-	    	data["data"][0].forEach(function(result, index) {
-                // add categories to list.....
-	    		 if (result[0] !== -1 && result[0] !== 0) {
-	                    // add categories to list.....
-	                    var obj = {
-	                        "fullId": result[0],
-	                        "title": result[1],
-	                        "image": "https://media.uam.tv/images/media/category/" + result[0] + ".jpg",
-	                     
-	                    };
+function getCategories(token) {
+    fetch(URL + 'v3/movies/categories/get.php', {
+            headers: {
+                'Authorization': "Bearer " + token
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
 
-	                    categoryList.push(obj);
-	                }
-	         });
+            data["data"][0].forEach((result, index) => {
+
+
+                if (result[0] !== -1 && result[0] !== 0) {
+                    // add categories to list.....
+                    var obj = {
+                        "fullId": result[0],
+                        "title": result[1],
+                        "image": "https://media.uam.tv/images/media/category/" + result[0] + ".jpg",
+                     
+                    };
+
+                    categoryList.push(obj);
+                }
+
+            })
+
+
 
             addCategories(token);
-	
+            
+
+        })
+        .catch((error) => {
+            console.error('Err:', error);
+            // hideLoader();
+        });
 }
 
 
-async function getMostRecents(token) {
+function getMostRecents(token) {
+    fetch(URL + 'v3/movies/onair/getMostRecent.php', {
+            headers: {
+                'Authorization': "Bearer " + token
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
 
-	 var response = await fetch(URL + 'v3/movies/onair/getMostRecent.php', {
-         headers: {
-             'Authorization': "Bearer " + token
-         },
-     });
-	    var data = await response.json();
-	 	
-	   
-	    	data.forEach(function(result, index) {
-              
-	    		
-	    		  var obj = {
-	                      "fullId": result["src"]["id_full"],
-	                      "image": "https://media.uam.tv/images/media/slider/" + result["src"]["id_full"] + ".jpg",
-	                      "movieId" : result["uid"]
-	                  };
+            data.forEach((result, index) => {
 
-	                  mostRecentsList.push(obj);
-	                  
-	         });
+                // add most recents to list.....
+                var obj = {
+                    "fullId": result["src"]["id_full"],
+                    "image": "https://media.uam.tv/images/media/slider/" + result["src"]["id_full"] + ".jpg",
+                    "movieId" : result["uid"]
+                };
 
-	    	  addMostRecents();
-	          getMostViewed(token);	
-	
+                mostRecentsList.push(obj);
 
+            })
+
+            addMostRecents();
+            getMostViewed(token);
+
+        })
+        .catch((error) => {
+            console.error('Err:', error);
+            // hideLoader();
+        });
 }
 
-async function getMostViewed(token) {
-   
-	
-	 var response = await fetch(URL + 'v3/movies/onair/getMostViewed.php', {
-         headers: {
-             'Authorization': "Bearer " + token
-         },
-     });
-	    var data = await response.json();
-	 	
-	   
-	    data["data"].forEach(function(result, index) {
-              
-	    	 var obj = {
-	                    "fullId": result["id_full"],
-	                    "image": "https://media.uam.tv/images/media/slider/" + result["id_full"] + ".jpg",
-	                    "movieId" : result["id_movie"]
-	                };
+function getMostViewed(token) {
+    fetch(URL + 'v3/movies/onair/getMostViewed.php', {
+            headers: {
+                'Authorization': "Bearer " + token
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
 
-	                mostViewedList.push(obj);
-	                  
-	         });
+            data["data"].forEach((result, index) => {
 
-        addMostViewed();
+                // add most viewed to list.....
 
-	
+                var obj = {
+                    "fullId": result["id_full"],
+                    "image": "https://media.uam.tv/images/media/slider/" + result["id_full"] + ".jpg",
+                    "movieId" : result["id_movie"]
+                };
 
+                mostViewedList.push(obj);
+
+            })
+
+            addMostViewed();
+
+        })
+        .catch((error) => {
+            console.error('Err:', error);
+            // hideLoader();
+        });
 }
 
 function addBackground() {
@@ -1234,51 +1361,51 @@ function addBackground() {
 }
 
 function addCategoriesToCategoryScreen() {
-    document.getElementById("container-fluid-category-id").innerHTML = "";
+    document.getElementById("container-fluid-category-id").innerHTML = ``;
 
 
     var rowId = "-1";
 
-    categoryList.forEach(function(result, idx) {
-          
-    	   console.log(idx);
 
-           if (idx % 4 == 0) {
-               if (idx == 0) {
-
-                   var showcase = document.getElementById("container-fluid-category-id");
-                   rowId = idx;
-
-                   showcase.innerHTML += `<div id="row-category ${rowId.toString()}" class="row"></div>`;
-
-               } else {
-
-                   var showcase = document.getElementById("container-fluid-category-id");
-                   rowId = idx;
-
-                   showcase.innerHTML += `<div id="row-category ${rowId.toString()}" class="row mt-5"></div>`;
-               }
-
-           }
+    categoryList.forEach((result, idx) => {
 
 
-           var row = document.getElementById("row-category " + rowId);
-           var temp = `
-           <div id="categoryScreen ${idx}" class="col-lg-3 mt-4">
-           <div id="categories-wrap ${idx}" class="card" style="width: 18rem;">
-               <img class="card-img-top image_placeholder" src="${result["image"]}" alt="Card image cap">
-               <p class="category_type">${result["title"]}</p>
-           </div>
-       </div> 
-           
-           `;
+        console.log(idx);
 
-           row.innerHTML += temp;
-           
-         });
-    
-    
-   
+        if (idx % 4 == 0) {
+            if (idx == 0) {
+
+                var showcase = document.getElementById("container-fluid-category-id");
+                rowId = idx;
+
+                showcase.innerHTML += `<div id="row-category ${rowId.toString()}" class="row"></div>`;
+
+            } else {
+
+                var showcase = document.getElementById("container-fluid-category-id");
+                rowId = idx;
+
+                showcase.innerHTML += `<div id="row-category ${rowId.toString()}" class="row mt-5"></div>`;
+            }
+
+        }
+
+
+        var row = document.getElementById("row-category " + rowId);
+        var temp = `
+        <div id="categoryScreen ${idx}" class="col-lg-3 mt-4">
+        <div id="categories-wrap ${idx}" class="card" style="width: 18rem;">
+            <img class="card-img-top image_placeholder" src="${result["image"]}" alt="Card image cap">
+            <p class="category_type">${result["title"]}</p>
+        </div>
+    </div> 
+        
+        `;
+
+        row.innerHTML += temp;
+
+
+    })
     removeFocusHome();
     hideSection("watch_section_id");
     hideSection("favourite_setion");
@@ -1337,6 +1464,59 @@ function addCategories(token) {
     
     getFavourites(token);
     
+}
+
+
+function addMostRecents() {
+
+    var rowId = "-1";
+
+
+    mostRecentsList.forEach((result, idx) => {
+
+
+        console.log(idx);
+
+        if (idx % 4 == 0) {
+            if (idx == 0) {
+
+                var showcase = document.getElementById("recent-carousel-item activeId");
+                rowId = idx;
+
+                showcase.innerHTML += `<div id="recent-row ${rowId.toString()}" class="row"></div>`;
+
+            } else {
+
+                var mainContainer = document.getElementById("recent-carousel-innerId");
+
+                mainContainer.innerHTML += `<div id="recent-item ${rowId.toString()}" class="carousel-item"></div>`;
+                var showcase = document.getElementById("recent-item " + rowId);
+
+                rowId = idx;
+                showcase.innerHTML += `<div id="recent-row ${rowId.toString()}" class="row"></div>`;
+            }
+
+
+        }
+
+        var row = document.getElementById("recent-row " + rowId);
+        var temp = `
+     
+        <div id="recent ${idx}" class="col-sm-3">
+        <div id="recent-wrap ${idx}" class="thumb-wrapper">
+            <div class="img-box">
+                <img src= "${result["image"]}" class="img-fluid image_placeholder" alt="">
+        
+            </div>
+        </div>
+    </div>  
+        
+        `;
+
+        row.innerHTML += temp;
+
+
+    })
 }
 
 
@@ -1399,70 +1579,6 @@ function addMostViewed() {
 
 
 }
-
-
-
-function addMostRecents() {
-
-	   var rowId = "-1";
-
-
-	    mostRecentsList.forEach((result, idx) => {
-
-
-	        console.log(idx);
-
-	        if (idx % 4 == 0) {
-	            if (idx == 0) {
-
-	                var showcase = document.getElementById("recent-carousel-item activeId");
-	                rowId = idx;
-
-	                showcase.innerHTML += `<div id="recent-row ${rowId.toString()}" class="row"></div>`;
-
-	            } else {
-
-	                var mainContainer = document.getElementById("recent-carousel-innerId");
-
-	                mainContainer.innerHTML += `<div id="recent-item ${rowId.toString()}" class="carousel-item"></div>`;
-	                var showcase = document.getElementById("recent-item " + rowId);
-
-	                rowId = idx;
-	                showcase.innerHTML += `<div id="recent-row ${rowId.toString()}" class="row"></div>`;
-	            }
-
-
-	        }
-
-	        var row = document.getElementById("recent-row " + rowId);
-	        
-	        
-	        
-	        var temp = `
-	        
-	        
-	        
-	        
-	        <div id="recent ${idx}" class="col-sm-3">
-	        	<div id="recent-wrap ${idx}" class="thumb-wrapper">
-	        			<div class="img-box">
-	            			<img src= "${result["image"]}" class="img-fluid image_placeholder" alt="">
-	            		</div>
-	            </div>
-	        </div>  
-	        
-	    
-	    
-	        `;
-
-	        row.innerHTML += temp;
-
-
-	    })
-
-
-}
-
 
 
 function addFavouritesToFavouritesScreen() {
@@ -1625,9 +1741,18 @@ function getMovieSource(moviePlay, token) { // hit stream api...
             // set to storage
 
             var videoUrl = data["data"]["embedUrlList"][0]["https"]["abr"]["hls"];
+            
+            if(moviePlay["geolimits"] == 2){
+            	localStorage.setItem("geo", "true");
+            }
+            else
+            	localStorage.setItem("geo", "false");
 
             
+            var movie = JSON.parse(localStorage.getItem("detail"));
             localStorage.setItem("video", videoUrl);
+            localStorage.setItem("videoId",  movie["movie_id"]);
+            
             
             location.href="../Video/video.html"
             

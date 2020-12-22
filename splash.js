@@ -83,26 +83,33 @@ let formData = new FormData();
 
 async function temp(formData , device , token){
 	
+	console.log("here");
 	formData.append('devicefriendlyname',  device.modelName);
 	formData.append('platform', "LG " + device.version);
 	formData.append('version', device.version);
 
 	
 	
-		
- 	   	    var response = await fetch(URL + 'v3/users/devices/heartbeat/post.php', {
- 	   		   	  method: 'POST',
- 	   			  body:formData,
- 	   			  headers: {
- 	   				  'Authorization' : "Bearer " + token,
- 	   			  },
- 	   			});
- 	   	    var data = await response.json();
- 	   	    console.log(data);
- 	   	    
-	 		location.href = "home/home.html";
+	try{
+		 var response = await fetch(URL + 'v3/users/devices/heartbeat/post.php', {
+   		   	  method: 'POST',
+   			  body:formData,
+   			  headers: {
+   				  'Authorization' : "Bearer " + token,
+   			  },
+   			});
+   	    var data = await response.json();
+   	    console.log(data);
+   	    
+		location.href = "home/home.html";
 
- 	   	    
+   	    
+	}
+	catch(Exception){
+		location.href = "login.html";
+	}
+		
+ 	   	   
  	   	    
  	   	    
  	   		

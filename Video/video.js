@@ -122,7 +122,41 @@ function setPlayer() {
 //	    	volumeStep: 0.1,
 //	    	seekStep: 5
 //	    	});
+	    
+	    
+    var geo = localStorage.getItem("geo");
+	    
+	    console.log("geo" , geo);
+	    
+	 //   if(geo == "true")
+	    headRequest(url);
+	    
 }
+
+
+function headRequest(pathToResource) {
+	  fetch(pathToResource, {
+	    method: 'HEAD'
+	  })
+
+	  .then(data => {
+
+		  if (data.status == 401) {
+			  
+			  setFocus("ok_btn_id" , "active_modal")
+	    		$('#myModal').modal('show');
+			  
+		}
+		  
+		  
+		  
+        })
+        .catch((error) => {
+            console.log('Err:', error);
+            
+        });
+	}
+
 
 
 
@@ -170,13 +204,39 @@ function moveLeft(){
 function moveOk() {
 	
 	
-		  if (player.paused()) {
+	if(document.getElementsByClassName("active_modal")[0] !== undefined){
+		
+		removeFocus("active_modal");
+		$('#myModal').modal('hide');
+
+		
+		
+	}
+	else
+		{
+		if (player.paused()) {
 			  player.play();
 		  }
 		  else {
 			  player.pause();
 		  }
+		}
+		  
 		
 	
 }
 
+
+function setFocus(id, clas) {
+
+    document.getElementById(id).classList.add(clas);
+
+}
+
+function removeFocus(clas) {
+
+    var el = document.getElementsByClassName(clas)[0].id;
+    document.getElementById(el.toString()).classList.remove(clas);
+
+
+}

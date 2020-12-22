@@ -217,14 +217,9 @@ async function doLogin(formData ,device){
 	
 	 formData.append('devicefriendlyname',  device.modelName);
  	formData.append('platform', "LG " + device.version);
- 	formData.append('version', device.version);
+ 	formData.append('version', "0.0.1");
  
- 	
-		
- 	
- 	console.log('devicefriendlyname',  device.modelName);
- 	console.log('platform', "LG " + device.version);
- 	console.log('version', device.version);
+
 
  	
 	 	   	    var response = await fetch('https://api.uam.tv/v3/users/auth/get.php', {

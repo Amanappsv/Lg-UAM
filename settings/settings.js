@@ -38,7 +38,7 @@ function initTizenKeys()
     
     		
        		break;
-    	case 10009: //RETURN button
+    	case 461: //RETURN button
     		location.href = "../home/home.html";
     		break;
     	default:

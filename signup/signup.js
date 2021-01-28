@@ -1,3 +1,6 @@
+var appVersion="0.0.2";
+
+
 var init = function () {
        
 	
@@ -212,12 +215,11 @@ formData.append('password', document.getElementById("pass").value);
 }
 
 
-
 async function doLogin(formData ,device){
 	
 	 formData.append('devicefriendlyname',  device.modelName);
  	formData.append('platform', "LG " + device.version);
- 	formData.append('version', "0.0.1");
+ 	formData.append('version', appVersion);
  
 
 

@@ -69,7 +69,7 @@ function initTizenKeys()
 		else if(inEvent.keyCode == 13){
 			moveOk();
 		}
-		else if(inEvent.keyCode == 91){
+		else if(inEvent.keyCode == 461){
 			 location.href = "../home/home.html";
 		}
 		

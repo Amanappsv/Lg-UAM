@@ -6,5 +6,6 @@
     "id": "com.domain.app",
     "title": "UAM TV",
     "type": "web",
-    "version": "0.0.1"
+    "version": "0.0.2",
+    "disableBackHistoryAPI": true
 }

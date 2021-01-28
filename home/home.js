@@ -7,6 +7,7 @@ var mostRecentsList = [];
 var mostViewedList = [];
 var randomBannerList = [];
 var activeSubscription;
+var appVersion="0.0.2";
 
 
 var selectedBannerIndex = 0;
@@ -116,16 +117,19 @@ function initWebOsKeys(){
 		else if(inEvent.keyCode == 13){
 			moveOk();
 		}
-		else if(inEvent.keyCode == 91){
-			 location.href = "../home/home.html";
+		else if(inEvent.keyCode == 461){
+			doBack();
 		}
-		
 	});
 
 }
 
 
 
+function doBack() {
+
+    webOS.platformBack();
+}
 
 
 
@@ -171,7 +175,7 @@ function refreshMyToken(refreshToken){
 		        "devicehash": webapis.productinfo.getDuid(),
 		        "devicefriendlyname": device.modelName,
 		        "platform" : "LG " + device.version,
-		        "version" : "0.0.1"
+		        "version" : appVersion
 		    };
 	  		
 
@@ -206,11 +210,87 @@ function refreshMyToken(refreshToken){
 
 	    		   }
 	    	   
-	        	
-	        	getHomeScreenData();
+	        	   heartbeatPost(data["jwt"] , appVersion);
+		        	
+	        	   getHomeScreenData();
 		 	  
 	 
 }
+
+ 
+ 
+
+ function doHeartBeat(token , v){
+ 	
+ let formData = new FormData();
+ 	
+ 	webOS.service.request("luna://com.webos.service.sm", {
+ 	    method: "deviceid/getIDs",
+ 	    parameters: { 
+ 	        "idType": ["LGUDID"]        
+ 	    },
+ 	    onSuccess: function (inResponse) {
+
+ 	    	
+ 	    	formData.append('devicehash', inResponse["idList"][0]["idValue"]);
+ 	    	
+ 	        webOS.deviceInfo( function (device) {
+ 	        	temp(formData , device , token , v);
+ 	        	
+ 	          });
+ 	    	
+ 	        
+ 	    },
+ 	    onFailure: function (inError) {
+ 	        console.log("Failed to get system ID information");
+ 	        console.log("[" + inError.errorCode + "]: " + inError.errorText);
+ 	        
+ 	 		location.href = "login.html";
+ 	        
+ 	        // To-Do something
+ 	        return;
+ 	    }
+ 	});
+ 	
+ }
+
+
+
+ async function temp(formData , device , token , v){
+ 	
+ 	console.log("here");
+ 	formData.append('devicefriendlyname',  device.modelName);
+ 	formData.append('platform', "LG " + device.version);
+ 	formData.append('version', appVersion);
+
+ 	
+ 	
+ 	try{
+ 		 var response = await fetch(URL + 'v3/users/devices/heartbeat/post.php', {
+    		   	  method: 'POST',
+    			  body:formData,
+    			  headers: {
+    				  'Authorization' : "Bearer " + token,
+    			  },
+    			});
+    	    var data = await response.json();
+    	    hideLoader();
+			  
+			  location.href = "home/home.html";
+			  
+    	    
+ 	}
+ 	catch(Exception){
+ 		location.href = "login.html";
+ 	}
+ 		
+  	   	   
+  	   	    
+  	   	    
+  	   		
+ }
+
+
 
 
 function changeBackgroundImg(index) {

@@ -1,3 +1,7 @@
+const URL = "https://api.uam.tv/";
+var appVersion="0.0.2";
+
+
 function initPage() {
   
 	initWebOsKeys();
@@ -254,7 +258,7 @@ formData.append('password', document.getElementById("pass").value);
 	        console.log("Failed to get system ID information");
 	        console.log("[" + inError.errorCode + "]: " + inError.errorText);
 	        // To-Do something
-	        return;
+	        //return;
 	    }
 	});
 	
@@ -289,14 +293,93 @@ async function doLogin(formData ,device){
 	 	   	    }
 	 	  
 	 	  
-	 	   	    localStorage.setItem("jwt token", data["jwt"]);
-	 	  
-	 	   	    hideLoader();
-	 	  
-	 	   	    location.href = "home/home.html";
+	 	   	 
+	 	 	  localStorage.setItem("jwt token", data["jwt"]);
+	 	 	
+	 	 	doHeartBeat(data["jwt"] , '0.0.2');
+	 	 	
 	 	  
 	
 }
+
+
+
+function doHeartBeat(token , v){
+	
+let formData = new FormData();
+	
+	webOS.service.request("luna://com.webos.service.sm", {
+	    method: "deviceid/getIDs",
+	    parameters: { 
+	        "idType": ["LGUDID"]        
+	    },
+	    onSuccess: function (inResponse) {
+
+	    	
+	    	formData.append('devicehash', inResponse["idList"][0]["idValue"]);
+	    	
+	        webOS.deviceInfo( function (device) {
+	        	temp(formData , device , token , v);
+	        	
+	          });
+	    	
+	        
+	    },
+	    onFailure: function (inError) {
+	        console.log("Failed to get system ID information");
+	        console.log("[" + inError.errorCode + "]: " + inError.errorText);
+	        
+	 		location.href = "login.html";
+	        
+	        // To-Do something
+	        return;
+	    }
+	});
+	
+}
+
+
+
+async function temp(formData , device , token , v){
+	
+	console.log("here");
+	formData.append('devicefriendlyname',  device.modelName);
+	formData.append('platform', "LG " + device.version);
+	formData.append('version', appVersion);
+
+	
+	
+	try{
+		 var response = await fetch(URL + 'v3/users/devices/heartbeat/post.php', {
+   		   	  method: 'POST',
+   			  body:formData,
+   			  headers: {
+   				  'Authorization' : "Bearer " + token,
+   			  },
+   			});
+   	    var data = await response.json();
+   	    console.log(data);
+   	    
+		location.href = "home/home.html";
+
+   	    
+	}
+	catch(Exception){
+		location.href = "login.html";
+	}
+		
+ 	   	   
+ 	   	    
+ 	   	    
+ 	   		
+}
+
+
+
+
+
+
+
 
 //init keyboard listener for textfields.....
 function initLoginElements()
